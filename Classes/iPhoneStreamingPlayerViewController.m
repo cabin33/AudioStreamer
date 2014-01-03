@@ -96,6 +96,8 @@
 
 	[self destroyStreamer];
 	
+    //http://shoutmedia.abc.net.au:10326
+    //http://pan.baidu.com/s/1kTFi1ON
 	NSString *escapedValue =
 		[(NSString *)CFURLCreateStringByAddingPercentEscapes(
 			nil,

@@ -218,7 +218,19 @@ static void ASReadStreamCallBack
 	if (self != nil)
 	{
 		url = [aURL retain];
+        
+#if __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_7_0
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleInterruptionChangeToState:) name:ASAudioSessionInterruptionOccuredNotification object:nil];
+#else
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(interruption:)
+                                                     name:AVAudioSessionInterruptionNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(routeChange:)
+                                                     name:AVAudioSessionRouteChangeNotification
+                                                   object:nil];
+#endif
+        
 	}
 	return self;
 }
@@ -230,7 +242,14 @@ static void ASReadStreamCallBack
 //
 - (void)dealloc
 {
+    
+#if __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_7_0
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:ASAudioSessionInterruptionOccuredNotification object:nil];
+#else
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:AVAudioSessionRouteChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:AVAudioSessionInterruptionNotification object:nil];
+#endif
+    
 	[self stop];
 	[url release];
 	[fileExtension release];
@@ -775,7 +794,7 @@ static void ASReadStreamCallBack
 			return;
 		}
 		
-	#if TARGET_OS_IPHONE			
+#if (TARGET_OS_IPHONE && __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_7_0)
 		//
 		// Set the audio session category so that we continue to play if the
 		// iPhone/iPod auto-locks.
@@ -793,7 +812,7 @@ static void ASReadStreamCallBack
 			&sessionCategory
 		);
 		AudioSessionSetActive(true);
-	#endif
+#endif
 	
 		// initialize a mutex and condition so that we can block on buffers in use.
 		pthread_mutex_init(&queueBuffersMutex, NULL);
@@ -882,7 +901,7 @@ cleanup:
 		pthread_mutex_destroy(&queueBuffersMutex);
 		pthread_cond_destroy(&queueBufferReadyCondition);
 
-#if TARGET_OS_IPHONE			
+#if TARGET_OS_IPHONE && __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_7_0
 		AudioSessionSetActive(false);
 #endif
 
@@ -1995,7 +2014,9 @@ cleanup:
 	}
 	else if (inInterruptionState == kAudioSessionEndInterruption) 
 	{
+#if __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_7_0
 		AudioSessionSetActive( true );
+#endif
 		
 		if ([self isPaused] && pausedByInterruption) {
 			[self pause]; // this is actually resume
@@ -2006,6 +2027,41 @@ cleanup:
 }
 #endif
 
-@end
+- (void)interruption:(NSNotification*)notification{
+    NSDictionary *interuptionDict = notification.userInfo;
+    NSUInteger interuptionType = [[interuptionDict valueForKey:AVAudioSessionInterruptionTypeKey] integerValue];
+    
+    if (interuptionType == AVAudioSessionInterruptionTypeBegan) {
+        if ([self isPlaying]) {
+            [self pause];
+            pausedByInterruption = YES;
+        }
+    }else if (interuptionType == AVAudioSessionInterruptionTypeEnded) {
+        if ([self isPaused] && pausedByInterruption) {
+            [self pause];
+            pausedByInterruption = NO;
+        }
+    }
+    NSLog(@"HysteriaPlayer interruption: %@", interuptionType == AVAudioSessionInterruptionTypeBegan ? @"began" : @"end");
+}
 
+- (void)routeChange:(NSNotification*)notification{
+    NSDictionary *routeChangeDict = notification.userInfo;
+    NSUInteger routeChangeType = [[routeChangeDict valueForKey:AVAudioSessionRouteChangeReasonKey] integerValue];
+    
+    if (routeChangeType == AVAudioSessionRouteChangeReasonOldDeviceUnavailable) {
+        if ([self isPlaying]) {
+            [self pause];
+            pausedByRouteChange = YES;
+        }
+    } else if (routeChangeType == AVAudioSessionRouteChangeReasonNewDeviceAvailable) {
+        if (pausedByRouteChange && [self isPaused]) {
+            [self pause];
+            pausedByRouteChange = NO;
+        }
+    }
+    NSLog(@"HysteriaPlayer routeChanged: %@", routeChangeType == AVAudioSessionRouteChangeReasonNewDeviceAvailable ? @"New Device Available" : @"Old Device Unavailable");
+}
+
+@end
 

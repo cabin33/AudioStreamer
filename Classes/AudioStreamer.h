@@ -23,12 +23,14 @@
 
 #if TARGET_OS_IPHONE			
 #import <UIKit/UIKit.h>
+#import <AVFoundation/AVFoundation.h>
 #else
 #import <Cocoa/Cocoa.h>
 #endif // TARGET_OS_IPHONE
 
 #include <pthread.h>
 #include <AudioToolbox/AudioToolbox.h>
+
 
 #define LOG_QUEUED_BUFFERS 0
 
@@ -169,6 +171,7 @@ extern NSString * const ASStatusChangedNotification;
 	double lastProgress;		// last calculated progress point
 #if TARGET_OS_IPHONE
 	BOOL pausedByInterruption;
+    BOOL pausedByRouteChange;
 #endif
 }
 

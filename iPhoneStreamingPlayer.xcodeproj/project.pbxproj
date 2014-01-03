@@ -25,6 +25,7 @@
 		C9E6730A0FE8C5650033BF43 /* stopbutton.png in Resources */ = {isa = PBXBuildFile; fileRef = C9E673060FE8C5650033BF43 /* stopbutton.png */; };
 		C9E6730B0FE8C5650033BF43 /* loadingbutton.png in Resources */ = {isa = PBXBuildFile; fileRef = C9E673070FE8C5650033BF43 /* loadingbutton.png */; };
 		C9E6730C0FE8C5650033BF43 /* pausebutton.png in Resources */ = {isa = PBXBuildFile; fileRef = C9E673080FE8C5650033BF43 /* pausebutton.png */; };
+		F1605AD61876BD51000B5C8D /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1605AD51876BD51000B5C8D /* AVFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,6 +53,7 @@
 		C9E673070FE8C5650033BF43 /* loadingbutton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = loadingbutton.png; path = "Shared Resources/loadingbutton.png"; sourceTree = "<group>"; };
 		C9E673080FE8C5650033BF43 /* pausebutton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pausebutton.png; path = "Shared Resources/pausebutton.png"; sourceTree = "<group>"; };
 		C9E673410FE8C6510033BF43 /* iPhoneInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = iPhoneInfo.plist; sourceTree = "<group>"; };
+		F1605AD51876BD51000B5C8D /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +61,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F1605AD61876BD51000B5C8D /* AVFoundation.framework in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */,
@@ -132,6 +135,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F1605AD51876BD51000B5C8D /* AVFoundation.framework */,
 				C9AB93F20FCF81790047C0FA /* MediaPlayer.framework */,
 				C9AB93E10FCF816F0047C0FA /* AudioToolbox.framework */,
 				C9423DF00EF8AA6B003B785B /* CFNetwork.framework */,
